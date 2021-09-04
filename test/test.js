@@ -24,6 +24,9 @@ describe("jt", () => {
       done()
     })
 
+    it("should return a valid token with empty payload", () => assert.equal(jt(header1,payload1_empty,secret1), token1))
+
+
     const header1 = {
         iss: "authSvc",
         sub: "userRoles",
@@ -32,8 +35,7 @@ describe("jt", () => {
     const payload1_empty = null
     const secret1 = "my secret key"
     const token1 = "eyJpc3MiOiJhdXRoU3ZjIiwic3ViIjoidXNlclJvbGVzIiwiZXhwIjoxNjMwNzMwNDQ3MTYwfQ.bnVsbA.KbkdXYDFesS0acvAu22t8wi2XASyyhLZUWDTMB9PmUw"
-
-    it("should return a valid token with empty payload", () => assert.equal(jt(header1,payload1_empty,secret1), token1))
+    const tamperedHeader = "eyJpc3MiOiJsaWFyIiwic3ViIjoiaGFja3oiLCJleHAiOjE2MzA3NTE1MjI1Mzd9.bnVsbA.KbkdXYDFesS0acvAu22t8wi2XASyyhLZUWDTMB9PmUw"
 
     it("should return the empty payload", done => {
       jt.decode(token1, (err, header, payload) => {
@@ -45,7 +47,7 @@ describe("jt", () => {
     })
 
     it("should validate the empty payload", done => {
-      jt.check(token1, (err, header, payload) => {
+      jt.check(token1, secret1, (err, header, payload) => {
         assert.equal(err, null)
         assert.deepEqual(header, header1)
         assert.deepEqual(payload, payload1_empty)
@@ -53,6 +55,12 @@ describe("jt", () => {
       })
     })
 
+    it("should not validate a tampered header", done => {
+      jt.check(tamperedHeader, secret1, (err, header, payload) => {
+        assert.equal(err, "invalid signature")
+        done()
+      })
+    })
 
     const header2 = {
         iss: "my new service",
@@ -79,5 +87,16 @@ describe("jt", () => {
         done()
       })
     })
+
+    it("should validate the given payload", done => {
+      jt.check(token2, secret2, (err, header, payload) => {
+        assert.equal(err, null)
+        assert.deepEqual(header, header2)
+        assert.deepEqual(payload, payload2)
+        done()
+      })
+    })
+
+
   })
 })

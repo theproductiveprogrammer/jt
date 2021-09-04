@@ -26,25 +26,47 @@ function jt(header, payload, secret) {
   if(!header || !secret) return null
   header = encodePart(header)
   payload = encodePart(payload)
-  let jt_ = `${header}.${payload}`
-  const sig = urlEncodeBase64(crypto.createHmac('sha256', secret).update(jt_).digest('base64'))
-  return `${jt_}.${sig}`
+  let enc = `${header}.${payload}`
+  const sig = getSig(enc, secret)
+  return `${enc}.${sig}`
+}
+
+function getSig(enc, secret) {
+  return urlEncodeBase64(crypto.createHmac('sha256', secret).update(enc).digest('base64'))
 }
 
 function decode(token, cb) {
+  if(!token) return cb()
+  const hps = token.split('.')
+  if(hps.length !== 3) return cb("invalid format")
+
+  let header
+  let payload
+  let signature
   try {
-    if(!token) return cb()
-    const hps = token.split('.')
-    if(hps.length !== 3) return cb("invalid format")
-    const header = JSON.parse(decodePart(hps[0]))
-    const payload = JSON.parse(decodePart(hps[1]))
-    const signature = decodePart(hps[2])
-    cb(null, header, payload, signature)
+    header = JSON.parse(decodePart(hps[0]))
+    payload = JSON.parse(decodePart(hps[1]))
+    signature = decodePart(hps[2])
   } catch(e) {
-    cb("invalid format")
+    return cb("invalid format")
   }
+
+  cb(null, header, payload, signature)
+}
+
+function check(token, secret, cb_) {
+  decode(token, (err, header, payload, signature) => {
+    if(err) return cb_(err, header, payload)
+    const ndx = token.lastIndexOf('.')
+    const enc = token.substring(0, ndx)
+    const sig = token.substring(ndx+1)
+    const ver = getSig(enc, secret)
+    if(ver !== sig) return cb_("invalid signature", header, payload)
+    return cb_(null, header, payload)
+  })
 }
 
 jt.decode = decode
+jt.check = check
 
 module.exports = jt
