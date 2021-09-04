@@ -115,6 +115,24 @@ describe("jt", () => {
       })
     })
 
+    it("should validate the subject", done => {
+      jt.check(token2, secret2, header2.iss, header2.sub, (err, payload, header) => {
+        assert.equal(err, null)
+        assert.deepEqual(header, header2)
+        assert.deepEqual(payload, payload2)
+        done()
+      })
+    })
+
+    it("should fail an invalid issuer", done => {
+      jt.check(token2, secret2, header2.iss, "subject to the law!", (err, payload, header) => {
+        assert.equal(err, "bad subject")
+        assert.deepEqual(header, header2)
+        assert.deepEqual(payload, payload2)
+        done()
+      })
+    })
+
 
 
   })

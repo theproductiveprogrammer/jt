@@ -54,10 +54,15 @@ function decode(token, cb) {
   cb(null, payload, header, signature)
 }
 
-function check(token, secret, iss, cb_) {
+function check(token, secret, iss, sub, cb_) {
   if(typeof iss === 'function') {
     cb_ = iss
     iss = null
+    sub = null
+  }
+  if(typeof sub === 'function') {
+    cb_ = sub
+    sub = null
   }
   decode(token, (err, payload, header, signature) => {
     if(err) return cb_(err, payload, header)
@@ -67,6 +72,7 @@ function check(token, secret, iss, cb_) {
     const ver = getSig(enc, secret)
     if(ver !== sig) return cb_("invalid signature", payload, header)
     if(iss && iss !== header.iss) return cb_("bad issuer", payload, header)
+    if(sub && sub !== header.sub) return cb_("bad subject", payload, header)
     return cb_(null, payload, header)
   })
 }
