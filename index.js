@@ -73,6 +73,7 @@ function check(token, secret, iss, sub, cb_) {
     if(ver !== sig) return cb_("invalid signature", payload, header)
     if(iss && iss !== header.iss) return cb_("bad issuer", payload, header)
     if(sub && sub !== header.sub) return cb_("bad subject", payload, header)
+    if(Date.now() > header.exp) return cb_("expired", payload, header)
     return cb_(null, payload, header)
   })
 }

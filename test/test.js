@@ -46,9 +46,9 @@ describe("jt", () => {
       })
     })
 
-    it("should validate the empty payload", done => {
+    it("should be expired", done => {
       jt.check(token1, secret1, (err, payload, header) => {
-        assert.equal(err, null)
+        assert.equal(err, "expired")
         assert.deepEqual(header, header1)
         assert.deepEqual(payload, payload1_empty)
         done()
@@ -88,7 +88,7 @@ describe("jt", () => {
       })
     })
 
-    it("should validate the given payload", done => {
+    it("should be expired", done => {
       jt.check(token2, secret2, (err, payload, header) => {
         assert.equal(err, null)
         assert.deepEqual(header, header2)
@@ -133,6 +133,30 @@ describe("jt", () => {
       })
     })
 
+    const header3 = {
+        iss: "anSwer",
+        sub: "xXx",
+        exp: Date.now() + 99,
+    }
+    const payload3 = {
+      data: 123
+    }
+    const secret3 = "MYW*Bka*#J@"
+
+    it("should expire correctly", done => {
+      const token = jt(header3, payload3, secret3)
+      setTimeout(() => {
+        jt.check(token, secret3, header3.iss, header3.sub, err => {
+          assert.equal(err, null)
+          setTimeout(() => {
+            jt.check(token, secret3, header3.iss, header3.sub, err => {
+              assert.equal(err, "expired")
+              done()
+            })
+          }, 100)
+        })
+      }, 5)
+    })
 
 
   })
