@@ -1,5 +1,5 @@
 {
-  "name": "jt",
+  "name": "@tpp/jt",
   "version": "1.0.0",
   "description": "A simpler and more secure JSON (web) Token",
   "main": "index.js",
