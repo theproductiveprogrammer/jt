@@ -90,9 +90,9 @@ const token = jt({
 Getting valid token data
 
 ```javascript
-jt.check(token, (err, payload, header) => ...)
-jt.check(token, "authSvc", (err, payload, header) => ...)
-jt.check(token, "authSvc", "userRoles"(err, payload, header) => ...)
+jt.check(token, "my secret key", (err, payload, header) => ...)
+jt.check(token, "my secret key", "authSvc", (err, payload, header) => ...)
+jt.check(token, "my secret key", "authSvc", "userRoles", (err, payload, header) => ...)
 
 // err => null (ok)
          "invalid format"
