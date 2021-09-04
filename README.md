@@ -24,7 +24,7 @@ Let’s break down the different parts.
 
 The header consists of the meta data about the token. Specifically the following fields:
 
-```json
+```
 {
   iss: <issuer>,
   sub: <subject>,
@@ -40,7 +40,7 @@ The second part of the token is the actual payload - the data that the token con
 
 An example payload could be:
 
-```json
+```javascript
 {
   name: "ralph rambo",
   pic: "https://pics.com/ralph-profile-pic.png",
