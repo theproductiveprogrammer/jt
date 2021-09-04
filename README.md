@@ -79,7 +79,7 @@ const jt = require("@tpp/jt")
 const token = jt({
   iss: "authSvc",
   sub: "userRoles",
-  exp: "1630730447160",
+  exp: 1630730447160,
 }, {
   name: "Ralph Rambo"
   roles: ["badass"],
