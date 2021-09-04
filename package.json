@@ -1,0 +1,22 @@
+{
+  "name": "jt",
+  "version": "0.1.0",
+  "description": "A simpler and more secure JSON (web) Token",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theproductiveprogrammer/jt.git"
+  },
+  "keywords": [
+    "jwt"
+  ],
+  "author": "charles.lobo@gmail.com",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/theproductiveprogrammer/jt/issues"
+  },
+  "homepage": "https://github.com/theproductiveprogrammer/jt#readme"
+}
