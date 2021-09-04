@@ -24,6 +24,7 @@ function decodePart(str) {
 
 function jt(header, payload, secret) {
   if(!header || !secret) return null
+  if(!header.iss || !header.sub || !header.exp) return null
   header = encodePart(header)
   payload = encodePart(payload)
   let enc = `${header}.${payload}`
@@ -66,6 +67,7 @@ function check(token, secret, iss, sub, cb_) {
   }
   decode(token, (err, payload, header, signature) => {
     if(err) return cb_(err, payload, header)
+    if(!header) return cb_("invalid header", payload)
     const ndx = token.lastIndexOf('.')
     const enc = token.substring(0, ndx)
     const sig = token.substring(ndx+1)

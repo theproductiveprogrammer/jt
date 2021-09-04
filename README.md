@@ -95,6 +95,7 @@ jt.check(token, "my secret key", "authSvc", (err, payload, header) => ...)
 jt.check(token, "my secret key", "authSvc", "userRoles", (err, payload, header) => ...)
 
 // err => null (ok)
+         "invalid header"
          "invalid format"
          "invalid signature"
          "expired"

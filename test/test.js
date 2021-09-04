@@ -9,6 +9,10 @@ describe("jt", () => {
     it("should ignore nulls", () => assert.equal(jt(), null))
     it("should fail if doesn't have enough parameters", () => assert.equal(jt({},{}), null))
 
+    it("should fail if issuer missing", () => assert.equal(jt({sub:1,exp:2},{}, "secret"), null))
+    it("should fail if subject missing", () => assert.equal(jt({iss:1,exp:2},{}, "secret"), null))
+    it("should fail if expiry missing", () => assert.equal(jt({sub:1,iss:2},{}, "secret"), null))
+
     it("should decode an empty payload", done => jt.decode(null, (err, payload, header) => {
       assert.equal(err, null)
       assert.equal(header, null)
