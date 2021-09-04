@@ -97,6 +97,25 @@ describe("jt", () => {
       })
     })
 
+    it("should validate the issuer", done => {
+      jt.check(token2, secret2, header2.iss, (err, payload, header) => {
+        assert.equal(err, null)
+        assert.deepEqual(header, header2)
+        assert.deepEqual(payload, payload2)
+        done()
+      })
+    })
+
+    it("should fail an invalid issuer", done => {
+      jt.check(token2, secret2, "fake fake", (err, payload, header) => {
+        assert.equal(err, "bad issuer")
+        assert.deepEqual(header, header2)
+        assert.deepEqual(payload, payload2)
+        done()
+      })
+    })
+
+
 
   })
 })
