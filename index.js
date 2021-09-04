@@ -51,18 +51,18 @@ function decode(token, cb) {
     return cb("invalid format")
   }
 
-  cb(null, header, payload, signature)
+  cb(null, payload, header, signature)
 }
 
 function check(token, secret, cb_) {
-  decode(token, (err, header, payload, signature) => {
-    if(err) return cb_(err, header, payload)
+  decode(token, (err, payload, header, signature) => {
+    if(err) return cb_(err, payload, header)
     const ndx = token.lastIndexOf('.')
     const enc = token.substring(0, ndx)
     const sig = token.substring(ndx+1)
     const ver = getSig(enc, secret)
-    if(ver !== sig) return cb_("invalid signature", header, payload)
-    return cb_(null, header, payload)
+    if(ver !== sig) return cb_("invalid signature", payload, header)
+    return cb_(null, payload, header)
   })
 }
 

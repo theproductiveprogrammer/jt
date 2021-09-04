@@ -9,7 +9,7 @@ describe("jt", () => {
     it("should ignore nulls", () => assert.equal(jt(), null))
     it("should fail if doesn't have enough parameters", () => assert.equal(jt({},{}), null))
 
-    it("should decode an empty payload", done => jt.decode(null, (err, header, payload) => {
+    it("should decode an empty payload", done => jt.decode(null, (err, payload, header) => {
       assert.equal(err, null)
       assert.equal(header, null)
       assert.equal(payload, null)
@@ -38,7 +38,7 @@ describe("jt", () => {
     const tamperedHeader = "eyJpc3MiOiJsaWFyIiwic3ViIjoiaGFja3oiLCJleHAiOjE2MzA3NTE1MjI1Mzd9.bnVsbA.KbkdXYDFesS0acvAu22t8wi2XASyyhLZUWDTMB9PmUw"
 
     it("should return the empty payload", done => {
-      jt.decode(token1, (err, header, payload) => {
+      jt.decode(token1, (err, payload, header) => {
         assert.equal(err, null)
         assert.deepEqual(header, header1)
         assert.deepEqual(payload, payload1_empty)
@@ -47,7 +47,7 @@ describe("jt", () => {
     })
 
     it("should validate the empty payload", done => {
-      jt.check(token1, secret1, (err, header, payload) => {
+      jt.check(token1, secret1, (err, payload, header) => {
         assert.equal(err, null)
         assert.deepEqual(header, header1)
         assert.deepEqual(payload, payload1_empty)
@@ -56,7 +56,7 @@ describe("jt", () => {
     })
 
     it("should not validate a tampered header", done => {
-      jt.check(tamperedHeader, secret1, (err, header, payload) => {
+      jt.check(tamperedHeader, secret1, (err, payload, header) => {
         assert.equal(err, "invalid signature")
         done()
       })
@@ -80,7 +80,7 @@ describe("jt", () => {
     it("should return a valid token with given payload", () => assert.equal(jt(header2,payload2,secret2), token2))
 
     it("should return the given payload", done => {
-      jt.decode(token2, (err, header, payload) => {
+      jt.decode(token2, (err, payload, header) => {
         assert.equal(err, null)
         assert.deepEqual(header, header2)
         assert.deepEqual(payload, payload2)
@@ -89,7 +89,7 @@ describe("jt", () => {
     })
 
     it("should validate the given payload", done => {
-      jt.check(token2, secret2, (err, header, payload) => {
+      jt.check(token2, secret2, (err, payload, header) => {
         assert.equal(err, null)
         assert.deepEqual(header, header2)
         assert.deepEqual(payload, payload2)
