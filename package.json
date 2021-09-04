@@ -4,7 +4,7 @@
   "description": "A simpler and more secure JSON (web) Token",
   "main": "index.js",
   "scripts": {
-    "test": "node test.js"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/theproductiveprogrammer/jt/issues"
   },
-  "homepage": "https://github.com/theproductiveprogrammer/jt#readme"
+  "homepage": "https://github.com/theproductiveprogrammer/jt#readme",
+  "devDependencies": {
+    "mocha": "^9.1.1"
+  }
 }
