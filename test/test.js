@@ -147,7 +147,8 @@ describe("jt", () => {
     }
     const secret3 = "MYW*Bka*#J@"
 
-    it("should expire correctly", done => {
+    it("should expire correctly", function(done) {
+      this.slow(5000)
       const token = jt(header3, payload3, secret3)
       setTimeout(() => {
         jt.check(token, secret3, header3.iss, header3.sub, err => {
