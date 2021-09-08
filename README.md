@@ -79,7 +79,7 @@ const jt = require("@tpp/jt")
 jt.token({
   iss: "authSvc",
   sub: "userRoles",
-  exp: 1630730447160,
+  exp: jt.exp.days(2), // expires in 2 days
 }, {
   name: "Ralph Rambo"
   roles: ["badass"],
@@ -109,5 +109,21 @@ You can also simply decode the token without checking it you desire:
 
 ```javascript
 jt.decode(token, (err, payload, header) => ...)
+```
+
+## Expiry
+
+Some helper functions are provided to set the expiry easily:
+
+```javascript
+header = {
+  ...
+  exp: jt.exp.ms(100), // expires in 100 milliseconds
+}
+ // Also
+  exp: jt.exp.secs(10), // expires in 10 seconds
+  exp: jt.exp.mins(30), // expires in 30 minutes
+  exp: jt.exp.hours(2), // expires in 2 hours
+  exp: jt.exp.days(7), // expires in 7 days
 ```
 

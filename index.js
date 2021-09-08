@@ -87,4 +87,20 @@ module.exports = {
   token,
   decode,
   check,
+  exp: {
+    ms: t => Date.now() + t,
+
+    sec: t => Date.now() + t * 1000,
+    secs: t => Date.now() + t * 1000,
+
+    min: t => Date.now() + t * 1000 * 60,
+    mins: t => Date.now() + t * 1000 * 60,
+
+    hr: t => Date.now() + t * 1000 * 60 * 60,
+    hrs: t => Date.now() + t * 1000 * 60 * 60,
+    hours: t => Date.now() + t * 1000 * 60 * 60,
+
+    day: t => Date.now() + t * 1000 * 60 * 60 * 24,
+    days: t => Date.now() + t * 1000 * 60 * 60 * 24,
+  }
 }

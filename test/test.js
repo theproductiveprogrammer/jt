@@ -203,5 +203,68 @@ describe("jt", () => {
       })
     })
 
+    it("should set expiry correctly (ms)", function(done) {
+      this.slow(5000)
+      const header4 = {
+        iss: "test",
+        sub: "yYy",
+        exp: jt.exp.ms(10),
+      }
+      jt.token(header4, payload3, secret3, (err, token) => {
+        assert.equal(err, null)
+        setTimeout(() => {
+          jt.check(token, secret3, header4.iss, header4.sub, err => {
+            assert.equal(err, null)
+            setTimeout(() => {
+              jt.check(token, secret3, header4.iss, header4.sub, err => {
+                assert.equal(err, "expired")
+                done()
+              })
+            }, 10)
+          })
+        }, 5)
+      })
+    })
+
   })
+
+  describe("jt.exp", () => {
+
+    it("should calculate milliseconds correctly", () => {
+      const now = Date.now()
+      const add = 100
+      const v = jt.exp.ms(add)
+      assert.equal(v > now && v < now + add + 1, true)
+    })
+
+    it("should calculate seconds correctly", () => {
+      const now = Date.now()
+      const add = 100
+      const v = jt.exp.secs(add)
+      assert.equal(v > now && v < now + (add * 1000) + 1, true)
+    })
+
+    it("should calculate minutes correctly", () => {
+      const now = Date.now()
+      const add = 100
+      const v = jt.exp.mins(add)
+      assert.equal(v > now && v < now + (add * 1000 * 60) + 1, true)
+    })
+
+    it("should calculate hours correctly", () => {
+      const now = Date.now()
+      const add = 100
+      const v = jt.exp.hrs(add)
+      assert.equal(v > now + (add * 1000 * 60 * 60) - 1 && v < now + (add * 1000 * 60 * 60) + 1, true)
+    })
+
+    it("should calculate days correctly", () => {
+      const now = Date.now()
+      const add = 100
+      const v = jt.exp.days(add)
+      assert.equal(v > now + (add * 1000 * 60 * 60 * 24) - 1 && v < now + (add * 1000 * 60 * 60 * 24) + 1, true)
+    })
+
+  })
+
 })
