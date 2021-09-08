@@ -3,15 +3,42 @@ const assert = require('assert')
 
 const jt = require('../')
 
+
 describe("jt", () => {
   describe("jt", () => {
 
-    it("should ignore nulls", () => assert.equal(jt(), null))
-    it("should fail if doesn't have enough parameters", () => assert.equal(jt({},{}), null))
+    it("should fail if doesn't have header", done => {
+      jt.token(null, null, null, (err, token) => {
+        assert.equal(err, "missing header")
+        done()
+      })
+    })
 
-    it("should fail if issuer missing", () => assert.equal(jt({sub:1,exp:2},{}, "secret"), null))
-    it("should fail if subject missing", () => assert.equal(jt({iss:1,exp:2},{}, "secret"), null))
-    it("should fail if expiry missing", () => assert.equal(jt({sub:1,iss:2},{}, "secret"), null))
+    it("should fail if doesn't have secret", done => {
+      jt.token({}, null, null, (err, token) => {
+        assert.equal(err, "missing secret")
+        done()
+      })
+    })
+
+    it("should fail if issuer is missing", done => {
+      jt.token({}, null, "my secret", (err, token) => {
+        assert.equal(err, "missing issuer (iss)")
+        done()
+      })
+    })
+    it("should fail if subject is missing", done => {
+      jt.token({iss:"authSvc"}, null, "my secret", (err, token) => {
+        assert.equal(err, "missing subject (sub)")
+        done()
+      })
+    })
+    it("should fail if expiry is missing", done => {
+      jt.token({iss:"authSvc",sub:"userinfo"}, null, "my secret", (err, token) => {
+        assert.equal(err, "missing expiry (exp)")
+        done()
+      })
+    })
 
     it("should decode an empty payload", done => jt.decode(null, (err, payload, header) => {
       assert.equal(err, null)
@@ -28,9 +55,6 @@ describe("jt", () => {
       done()
     })
 
-    it("should return a valid token with empty payload", () => assert.equal(jt(header1,payload1_empty,secret1), token1))
-
-
     const header1 = {
         iss: "authSvc",
         sub: "userRoles",
@@ -40,6 +64,14 @@ describe("jt", () => {
     const secret1 = "my secret key"
     const token1 = "eyJpc3MiOiJhdXRoU3ZjIiwic3ViIjoidXNlclJvbGVzIiwiZXhwIjoxNjMwNzMwNDQ3MTYwfQ.bnVsbA.KbkdXYDFesS0acvAu22t8wi2XASyyhLZUWDTMB9PmUw"
     const tamperedHeader = "eyJpc3MiOiJsaWFyIiwic3ViIjoiaGFja3oiLCJleHAiOjE2MzA3NTE1MjI1Mzd9.bnVsbA.KbkdXYDFesS0acvAu22t8wi2XASyyhLZUWDTMB9PmUw"
+
+    it("should return a valid token with empty payload", done => {
+      jt.token(header1, payload1_empty, secret1, (err, token) => {
+        assert.equal(err, null)
+        assert.equal(token, token1)
+        done()
+      })
+    })
 
     it("should return the empty payload", done => {
       jt.decode(token1, (err, payload, header) => {
@@ -81,7 +113,13 @@ describe("jt", () => {
     const secret2 = "ksauowiehjsdaiur205823075pjda;lfkjs;e9487qjadlfkjas;83q4-0rufjslkdvjd039485j;dklsjqp958aja90438rjfa"
     const token2 = "eyJpc3MiOiJteSBuZXcgc2VydmljZSIsInN1YiI6Im15IGdvb2Qgc3ViamVjdHMiLCJleHAiOjIyNjE0NzA0ODIzMTcsImF1ZCI6Im15IGtpbmdkb20gZm9yIGEgZ29vZCBhdWRpZW5jZSEifQ.eyJkYXRhIjoiZGF0YSAxMjMiLCJhbmQiOiJtb3JlIGRhdGEiLCJ5ZXQiOiJtb3JlIGFuZCBtb3JlIGFuZCBtb3JlIiwieW91IjoiZ3Vlc3NlZCBpdCEgLSBkYXRhISJ9.iDp8CiBMhAY7swCXbxqUavfsWE1ohmXwqARejRV3vzc"
 
-    it("should return a valid token with given payload", () => assert.equal(jt(header2,payload2,secret2), token2))
+    it("should return a valid token with given payload", done => {
+      jt.token(header2, payload2, secret2, (err, token) => {
+        assert.equal(err, null)
+        assert.equal(token, token2)
+        done()
+      })
+    })
 
     it("should return the given payload", done => {
       jt.decode(token2, (err, payload, header) => {
@@ -149,20 +187,21 @@ describe("jt", () => {
 
     it("should expire correctly", function(done) {
       this.slow(5000)
-      const token = jt(header3, payload3, secret3)
-      setTimeout(() => {
-        jt.check(token, secret3, header3.iss, header3.sub, err => {
-          assert.equal(err, null)
-          setTimeout(() => {
-            jt.check(token, secret3, header3.iss, header3.sub, err => {
-              assert.equal(err, "expired")
-              done()
-            })
-          }, 100)
-        })
-      }, 5)
+      jt.token(header3, payload3, secret3, (err, token) => {
+        assert.equal(err, null)
+        setTimeout(() => {
+          jt.check(token, secret3, header3.iss, header3.sub, err => {
+            assert.equal(err, null)
+            setTimeout(() => {
+              jt.check(token, secret3, header3.iss, header3.sub, err => {
+                assert.equal(err, "expired")
+                done()
+              })
+            }, 100)
+          })
+        }, 5)
+      })
     })
-
 
   })
 })

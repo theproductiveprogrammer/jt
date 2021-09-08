@@ -76,7 +76,7 @@ Creating the token
 ```javascript
 const jt = require("@tpp/jt")
 
-const token = jt({
+jt.token({
   iss: "authSvc",
   sub: "userRoles",
   exp: 1630730447160,
@@ -84,7 +84,7 @@ const token = jt({
   name: "Ralph Rambo"
   roles: ["badass"],
 },
-"my secret key")
+"my secret key", (err, token) => ...)
 ```
 
 Getting valid token data
@@ -105,7 +105,7 @@ jt.check(token, "my secret key", "authSvc", "userRoles", (err, payload, header) 
 // header => { iss: "authSvc", sub: "userRoles", exp: 1630730447160 }
 ```
 
-You can also simply decode the token without checking it if desired:
+You can also simply decode the token without checking it you desire:
 
 ```javascript
 jt.decode(token, (err, payload, header) => ...)

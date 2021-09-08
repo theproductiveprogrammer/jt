@@ -22,14 +22,17 @@ function decodePart(str) {
 }
 
 
-function jt(header, payload, secret) {
-  if(!header || !secret) return null
-  if(!header.iss || !header.sub || !header.exp) return null
+function token(header, payload, secret, cb) {
+  if(!header) return cb("missing header")
+  if(!secret) return cb("missing secret")
+  if(!header.iss) return cb("missing issuer (iss)")
+  if(!header.sub) return cb("missing subject (sub)")
+  if(!header.exp) return cb("missing expiry (exp)")
   header = encodePart(header)
   payload = encodePart(payload)
   let enc = `${header}.${payload}`
   const sig = getSig(enc, secret)
-  return `${enc}.${sig}`
+  cb(null, `${enc}.${sig}`)
 }
 
 function getSig(enc, secret) {
@@ -80,7 +83,8 @@ function check(token, secret, iss, sub, cb_) {
   })
 }
 
-jt.decode = decode
-jt.check = check
-
-module.exports = jt
+module.exports = {
+  token,
+  decode,
+  check,
+}
